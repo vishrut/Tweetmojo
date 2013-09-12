@@ -1,0 +1,14 @@
+<form name="inputb" action="tweetrieve/views/formsubmit" method="get">
+Username: <input type="text" name="handle">
+<input type="submit" value="Submit">
+</form> 
+<a href="">{{ handle }}</a>
+{% if tweet_list %}
+    <ul>
+    {% for tweet in tweet_list %}
+        <li><a href="">{{ tweet.tweet_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No tweets are available.</p>
+{% endif %}

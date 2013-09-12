@@ -6,8 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'tweetrieve.views.home', name='home'),
-    url(r'^tweetrieve/', include('tweetrieve.urls')),
+    url(r'views/formsubmit', 'tweetrieve.views.formsubmit', name='formsubmit'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
