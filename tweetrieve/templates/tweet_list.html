@@ -13,18 +13,41 @@ function sendTweet(tweet_id){
 </script>
 {% endblock %}
 
+{% block search_bar %}
+	<br>
+	<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+	<form class="form-inline" role="form" name="input" action="formsubmit" method="get">
+  		<div class="form-group">
+    		<label class="sr-only" for="handle">Twitter Handle</label>
+    		<input type="text" class="form-control" id="handle" name="handle" placeholder="Enter handle" required>
+  		</div>
+  		<button type="submit" class="btn btn-primary">Search</button>
+	</form>
+	</div>
+	<div class="col-md-4"></div>
+
+	</div>
+{% endblock %}
+
 {% block tweet_listing %}
 	<form id="sendtweet" name="sendtweet" method="POST" action="tweetsubmit">{% csrf_token %}
 		<input type="hidden" id="tweet_text" name="tweet_text"></input>
 	</form>
-	<a href="">{{ handle }}</a>
+	<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-6">
 	{% if tweet_list %}
 	    {% for tweet in tweet_list %}
 	        <span id="tweet{{tweet.tweet_id}}">{{ tweet.tweet_text }}</span>
+	        <br><br>
 	        <button type="button" class="btn btn-primary btn-sm" onclick="sendTweet({{tweet.tweet_id}})">Create Offer</button>
 	        <hr>
 	    {% endfor %}
 	{% else %}
 	    <p>No tweets are available.</p>
 	{% endif %}
+	</div>
+	<div class="col-md-3"></div>
 {% endblock %}

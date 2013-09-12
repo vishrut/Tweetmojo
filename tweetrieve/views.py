@@ -25,9 +25,40 @@ def home(request):
 	return HttpResponse(template.render(context))
 
 def tweetsubmit(request):
+
+	headers = {
+           'X-App-Id': '37674edc3f8d743425ddd747fb6ccf5c',
+           'X-Auth-Token': 'a974800a5567e2a22759c8176b3ddb80'
+		}
+
+	payload	= {
+			'title': 'Test Membership through API 2',
+			#'description': 'Testing API',
+			'currency': 'INR',
+			'base_price': '50',
+			'quantity': '0',
+			'start_date': '2013-12-31 23:00',
+			'end_date': '2014-12-31 23:59',
+			'timezone': 'Asia/Kolkata',
+			'venue': 'Goa',
+			#'redirect_url':,
+			#'note':,
+			#'file_upload_json':,
+			#'cover_image_json':,
+		}
+	## Mandatory Fields - Title, Currency, Base Price
+	## Events - Start Date, End Date, Timezone
+	## Files - File Upload JSON
+	1. Check for TCB
+	2. If start or end date then start, end dates and timezone should exist
+
+
+	r = requests.post('https://www.instamojo.com/api/1/offer/', headers=headers, data=payload)
+
 	template = loader.get_template('create_offer.html')
 	context = RequestContext(request, {
-		'tweet': request.POST['tweet_text']
+		'tweet': request.POST['tweet_text'],
+		'api_response': r.text
 	})
 	return HttpResponse(template.render(context))
 
@@ -50,7 +81,7 @@ def formsubmit(request):
 	headers = {
            'X-App-Id': '37674edc3f8d743425ddd747fb6ccf5c',
            'X-Auth-Token': 'a974800a5567e2a22759c8176b3ddb80'
-          }
+		}
 	
 	#r = requests.post('https://www.instamojo.com/api/1/debug/', headers=headers)
 	#print r.text
