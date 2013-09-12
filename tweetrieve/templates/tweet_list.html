@@ -1,12 +1,29 @@
 {% extends "home.html" %}
+{% block head %}
+<head>
+	<title>Tweetmojo</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<script>
+function sendTweet(tweet_id){
+	tweet_text = $("#tweet"+tweet_id).text();
+	$("#tweet_text").val(tweet_text);
+	$("#sendtweet").submit();
+}
+</script>
+{% endblock %}
+
 {% block tweet_listing %}
+	<form id="sendtweet" name="sendtweet" method="POST" action="tweetsubmit">{% csrf_token %}
+		<input type="hidden" id="tweet_text" name="tweet_text"></input>
+	</form>
 	<a href="">{{ handle }}</a>
 	{% if tweet_list %}
-	    <ul>
 	    {% for tweet in tweet_list %}
-	        <li><a href="">{{ tweet.tweet_text }}</a></li>
+	        <span id="tweet{{tweet.tweet_id}}">{{ tweet.tweet_text }}</span>
+	        <button type="button" class="btn btn-primary btn-sm" onclick="sendTweet({{tweet.tweet_id}})">Create Offer</button>
+	        <hr>
 	    {% endfor %}
-	    </ul>
 	{% else %}
 	    <p>No tweets are available.</p>
 	{% endif %}

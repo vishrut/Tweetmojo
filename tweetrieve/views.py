@@ -15,14 +15,24 @@ CONSUMER_SECRET = "IytfyvKxmPBnrRmqxt0NV0waoXUPq8rfUXD0tzg3HI"
 OAUTH_TOKEN = "87239233-VSblo33EEkuQyNHgi11GRe0QqSHXPBM3X6tBRAWk"
 OAUTH_TOKEN_SECRET = "xu05xY5WXxPoctvljLLbnoVSGSGfp0Yt241r6EVrd0"
 
+tweet_list = []
+
+
 def home(request):
 
 	template = loader.get_template('home.html')
+	context = RequestContext(request, {})
+	return HttpResponse(template.render(context))
+
+def tweetsubmit(request):
+	template = loader.get_template('create_offer.html')
 	context = RequestContext(request, {
+		'tweet': request.POST['tweet_text']
 	})
 	return HttpResponse(template.render(context))
 
 def formsubmit(request):
+	tweet_list = []
 	url = "https://api.twitter.com/1.1/search/tweets.json?q="+request.GET['handle']
 	consumer = oauth.Consumer(key=CONSUMER_KEY,
 							  secret=CONSUMER_SECRET)
@@ -42,14 +52,15 @@ def formsubmit(request):
            'X-Auth-Token': 'a974800a5567e2a22759c8176b3ddb80'
           }
 	
-	r = requests.post('https://www.instamojo.com/api/1/debug/', headers=headers)
-	print r.text
+	#r = requests.post('https://www.instamojo.com/api/1/debug/', headers=headers)
+	#print r.text
 	
-	tweet_list = []
 	status_list = content_dict['statuses']
+	tweet_id = 0
 	for status in status_list:
-		new_tweet = Tweet(user_handle="Vishrut42", tweet_text=status['text'])
+		new_tweet = Tweet(tweet_id = tweet_id, user_handle="Vishrut42", tweet_text=status['text'])
 		tweet_list.append(new_tweet)
+		tweet_id+=1
 	
 	template = loader.get_template('tweet_list.html')
 	context = RequestContext(request, {
