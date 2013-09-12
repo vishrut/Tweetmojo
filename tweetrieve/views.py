@@ -23,7 +23,7 @@ def home(request):
 	return HttpResponse(template.render(context))
 
 def formsubmit(request):
-	url = "https://api.twitter.com/1.1/search/tweets.json?q=Vishrut42"
+	url = "https://api.twitter.com/1.1/search/tweets.json?q="+request.GET['handle']
 	consumer = oauth.Consumer(key=CONSUMER_KEY,
 							  secret=CONSUMER_SECRET)
 	token = oauth.Token(key=OAUTH_TOKEN,
@@ -35,20 +35,20 @@ def formsubmit(request):
 		method="GET"
 	)
 
-	#print "RESPONSE-------------------"
-	#print resp
 	content_dict = json.loads(content)
-	#print "CONTENT--------------------"
-	#print json.dumps(content_dict, sort_keys=True, indent=4, separators=(',', ': '))
 
-	status_list = content_dict['statuses']
-	for status in status_list:
-		print status['text'].encode('utf-8')
+	headers = {
+           'X-App-Id': '37674edc3f8d743425ddd747fb6ccf5c',
+           'X-Auth-Token': 'a974800a5567e2a22759c8176b3ddb80'
+          }
+	
+	r = requests.post('https://www.instamojo.com/api/1/debug/', headers=headers)
+	print r.text
 	
 	tweet_list = []
-
-	for tweet_num in range (0, 3):
-		new_tweet = Tweet(user_handle="vishrut", tweet_text="my tweet")
+	status_list = content_dict['statuses']
+	for status in status_list:
+		new_tweet = Tweet(user_handle="Vishrut42", tweet_text=status['text'])
 		tweet_list.append(new_tweet)
 	
 	template = loader.get_template('tweet_list.html')

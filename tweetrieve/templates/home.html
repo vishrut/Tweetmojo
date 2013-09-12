@@ -1,4 +1,9 @@
-<form name="inputa" action="tweetrieve/views/formsubmit" method="get">
-Username: <input type="text" name="handle">
-<input type="submit" value="Submit">
-</form> 
+{% block search_bar %}
+	<form name="input" action="tweetrieve/views/formsubmit" method="get">
+		Username: <input type="text" name="handle">
+		<input type="submit" value="Submit">
+	</form>
+{% endblock %}
+
+{% block tweet_listing %}
+{% endblock %}
