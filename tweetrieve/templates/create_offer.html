@@ -1,4 +1,8 @@
 <html>
 {{ tweet }}
-{{ api_response }}
+<ul>
+{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}
+</ul>
 </html>
