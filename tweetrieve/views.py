@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django import forms
 import json
 import requests
+import datetime
 from models import Tweet
 import oauth2 as oauth
 import re
@@ -38,31 +39,14 @@ translation_dict = {
 			'price': 'base_price',
 		}
 
-"""
-validation_dict = {
-			'title': validate_title,
-			#'description': validate_description,
-			'currency': validate_currency,
-			'base_price': validate_price,
-			'quantity': validate_quantity,
-			'start_date': validate_start_date, 
-			'end_date': validate_end_date, 
-			#'timezone': validate_timezone,
-			#'venue': validate_venue,
-			#'redirect_url': validate_url,
-			#'note': validate_note, 
-			#'file_upload_json': validate_file_json,
-			#'cover_image_json': validate_cover,
-		}
-"""
 messages = {
 			'title': 'Title required, should not be empty', #not empty
 			#'description': '',
 			'currency': 'Currency required and must be INR or USD',# INR or USD
-			'base_price': 'Base price must be a number', #must be number
+			'base_price': 'Base price must be a number. Should be at least USD 0.49 or INR 9', #must be number
 			'quantity': 'Quantity must be a number', #must be number
-			'start_date': 'Start date format should be YYYY-MM-DD HH:MM', #strptime
-			'end_date': 'End date format should be be YYYY-MM-DD HH:MM', #strptime and > start
+			'start_date': 'Start date format should be YYYY-MM-DD hh:mm', #strptime
+			'end_date': 'End date format should be be YYYY-MM-DD hh:mm', #strptime and > start
 			#'timezone': 'Timezone format - Asia/Kolkata', #not empty
 			'date_trio': 'For an event, start date, end date and timezone should occur together.'
 			#'venue': '',
@@ -72,6 +56,64 @@ messages = {
 			#'cover_image_json': '',
 		}
 
+def validate_title(title, offer_dict):
+	title = title.strip()
+	if len(title)>0 :
+		return True
+	else:
+		return False
+
+def validate_price(price, offer_dict):
+	try:
+		float(price)
+	except ValueError:
+		return False
+	if price==0:
+		return True
+	else:
+		if offer_dict['currency']=='INR' and price>=9:
+			return True
+		if offer_dict['currency']=='USD' and price>=0.49:
+			return True
+	return False
+	
+def validate_quantity(quantity, offer_dict):
+	try:
+		qty = int(quantity)
+	except ValueError:
+		return False
+	if qty>=0 :
+		return True
+	else:
+		return False
+
+def validate_currency(currency, offer_dict):
+	if currency=='INR' or currency=='USD':
+		return True
+	return False
+
+def validate_date(date_string, offer_dict):
+	try:
+		datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M')
+	except ValueError:
+		return False
+	return True
+
+validation_dict = {
+			'title': validate_title,
+			#'description': validate_description,
+			'currency': validate_currency,
+			'base_price': validate_price,
+			'quantity': validate_quantity,
+			'start_date': validate_date, 
+			'end_date': validate_date, 
+			#'timezone': validate_timezone,
+			#'venue': validate_venue,
+			#'redirect_url': validate_url,
+			#'note': validate_note, 
+			#'file_upload_json': validate_file_json,
+			#'cover_image_json': validate_cover,
+		}
 
 def home(request):
 
@@ -81,7 +123,7 @@ def home(request):
 
 def tweetsubmit(request):
 	tweet_text = request.POST['tweet_text'].encode('ascii','ignore')
-	tweet_text = """t-hi\nc-INR\np-50\ns-abc\n"""
+	#tweet_text = """t-\nc-INRs\np-s0\ns-2013-12-12 23:xy\n"""
 	regex = re.compile(r'[\r]')
 	tweet_text = regex.sub('', tweet_text)
 	
@@ -103,16 +145,34 @@ def tweetsubmit(request):
            'X-Auth-Token': X_AUTH_TOKEN 
 		}
 	
-	#r = requests.post('https://www.instamojo.com/api/1/offer/', headers=headers, data=offer_dict)
+	if len(error_messages) == 0:
+		r = requests.post('https://www.instamojo.com/api/1/offer/', headers=headers, data=offer_dict)
+		im_response = r.json()
+		if im_response['success']:
+			link = im_response['offer']['url']
+			template = loader.get_template('create_offer.html')
+			context = RequestContext(request, {
+				'tweet': request.POST['tweet_text'],
+				'link': link,
+			})
+			return HttpResponse(template.render(context))
+		else:
+			template = loader.get_template('create_offer.html')
+			context = RequestContext(request, {
+				'tweet': request.POST['tweet_text'],
+				'remote_error': True,
+				'response_object':r.text
+			})
+			return HttpResponse(template.render(context))
 
-	template = loader.get_template('create_offer.html')
-	context = RequestContext(request, {
-		'tweet': request.POST['tweet_text'],
-		#'api_response': r.text,
-		'error_messages': error_messages
-	})
-	
-	return HttpResponse(template.render(context))
+	else:
+		template = loader.get_template('create_offer.html')
+		context = RequestContext(request, {
+			'tweet': request.POST['tweet_text'],
+			'error_messages': error_messages
+		})
+		return HttpResponse(template.render(context))
+
 
 def formsubmit(request):
 	tweet_list = []
@@ -161,10 +221,9 @@ def validate_offer(offer_dict):
 			'timezone' not in offer_dict):
 			error_messages.append(messages['date_trio'])
 
-	"""
 	for field in offer_dict:
 		if field in validation_dict:
-			if not validation_dict[field](offer_dict[field]):
+			if not validation_dict[field](offer_dict[field], offer_dict):
 				error_messages.append(messages[field])
-	"""
+
 	return error_messages

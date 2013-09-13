@@ -1,8 +1,15 @@
 <html>
 {{ tweet }}
+{% if link %}
+	<a href={{link}}>Your offer has been created</a>
+	<hr>
+{% endif %}
 <ul>
 {% for message in error_messages %}
 	<li>{{ message }}</li>
 {% endfor %}
 </ul>
+{% if remote_error %}
+<span>Looks like something went wrong. Response message : {{ response_object }}</span>
+{% endif %}
 </html>
