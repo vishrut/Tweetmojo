@@ -2,7 +2,9 @@
 
 Tweetmojo creates Instamojo offers based on tweets.
 
-You can find more information on how to use it at http://tweetmojo.herokuapp.com
+You can find the working instance at http://tweetmojo.herokuapp.com/tweetrieve/views/search_tweets?handle=Vishrut42
+
+Note: All offers created on vrp101's Instamojo account.
 
 ## Usage
 
