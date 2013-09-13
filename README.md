@@ -8,11 +8,6 @@ You can find more information on how to use it at http://tweetmojo.herokuapp.com
 
 * Tweets should contain one pair of field identifier and field value on each line.
 * Field ID and field value should be separated by a hyphen.
-* For example, to create an offer with title "My New Offer" and base price INR 50, the tweet shoul look like this:
-
-	t - My New Offer
-	c - INR
-	p - 50 	
 
 ## Field Identifiers
 
