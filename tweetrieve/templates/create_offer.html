@@ -1,15 +1,59 @@
 <html>
-{{ tweet }}
+
+<head>
+	<title>Tweetmojo</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="">Tweetmojo</a>
+  </div>
+</nav>
+
 {% if link %}
-	<a href={{link}}>Your offer has been created</a>
-	<hr>
+	<div style="margin-left:30px; margin-right:30px;" class="panel panel-success">
+	  <div class="panel-heading">Congratulations!</div>
+	  <div class="panel-body">
+	    <a href={{ link }}>Your offer has been created. Click here to view it.</a>
+	    <hr>
+	    <span>Offer URL:</span>
+	    <div class="well well-sm">
+    		{{ link }}
+    	</div>
+	  </div>
+	</div>
 {% endif %}
-<ul>
-{% for message in error_messages %}
-	<li>{{ message }}</li>
-{% endfor %}
-</ul>
+
+{% if error_messages %}
+<div style="margin-left:30px; margin-right:30px; " class="panel panel-danger">
+  <div class="panel-heading">Your tweet fails the following requirements:</div>
+
+  <ul class="list-group">
+  	{% for message in error_messages %}
+    <li class="list-group-item">{{ message }}</li>
+	{% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 {% if remote_error %}
-<span>Looks like something went wrong. Response message : {{ response_object }}</span>
+<div style="margin-left:30px; margin-right:30px;" class="panel panel-danger">
+  <div class="panel-heading">Something smells funny...</div>
+  <div class="panel-body">
+    <p>Instamojo server response message:</p>
+    <div class="well well-sm">
+    		{{ response_object }}
+    </div>
+  </div>
+</div>
 {% endif %}
+
+</body>
+
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
 </html>

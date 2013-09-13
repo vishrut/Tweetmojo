@@ -1,9 +1,11 @@
-{% extends "home.html" %}
+<html>
+
 {% block head %}
 <head>
 	<title>Tweetmojo</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
 </head>
+
 <script>
 function sendTweet(tweet_id){
 	tweet_text = $("#tweet"+tweet_id).text();
@@ -14,31 +16,45 @@ function sendTweet(tweet_id){
 {% endblock %}
 
 {% block search_bar %}
-	<br>
-	<div class="row">
-		<div class="col-md-4"></div>
-		<div class="col-md-4">
-	<form class="form-inline" role="form" name="input" action="formsubmit" method="get">
-  		<div class="form-group">
-    		<label class="sr-only" for="handle">Twitter Handle</label>
-    		<input type="text" class="form-control" id="handle" name="handle" placeholder="Enter handle" required>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="">Tweetmojo</a>
+  </div>
+</nav>
+
+<div class="row">
+	<div class="col-md-3">
+		<div style="margin-left:15px;" class="panel panel-default">
+  		<div class="panel-heading">
+    		<h3 class="panel-title">Tweet Format</h3>
   		</div>
-  		<button type="submit" class="btn btn-primary">Search</button>
-	</form>
-	</div>
-	<div class="col-md-4"></div>
-
-	</div>
-{% endblock %}
-
-{% block tweet_listing %}
-	<form id="sendtweet" name="sendtweet" method="POST" action="tweetsubmit">{% csrf_token %}
-		<input type="hidden" id="tweet_text" name="tweet_text"></input>
-	</form>
-	<div class="row">
-		<div class="col-md-3"></div>
-		<div class="col-md-6">
-	{% if tweet_list %}
+  		<div class="panel-body">
+    		Tweets should contain one pair of field identifier and field value on each line.
+    		<hr>
+    		Field ID and field value should be separated by a hyphen.
+    		<hr>
+    		For example, to create an offer with title "My New Offer" and base price INR 50, the tweet shoul look like this:<br><br>
+    		<div class="well well-sm">
+    		t - My New Offer<br>
+    		c - INR<br>
+    		p - 50 	
+    		</div>
+		</div>
+ 	</div>
+ </div>
+	<div class="col-md-1"></div>
+	
+	<div class="col-md-4">
+		<div class="row">
+		<form class="form-inline" role="form" name="input" action="tweetrieve/views/formsubmit" method="get">
+				<div class="form-group">
+				<label class="sr-only" for="handle">Twitter Handle</label>
+				<input type="text" class="form-control" id="handle" name="handle" placeholder="Twitter Username" required>
+				</div>
+				<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+		</div>
+		<div class="row">{% if tweet_list %}
 	    {% for tweet in tweet_list %}
 	        <span id="tweet{{tweet.tweet_id}}">{{ tweet.tweet_text }}</span>
 	        <br><br>
@@ -46,8 +62,46 @@ function sendTweet(tweet_id){
 	        <hr>
 	    {% endfor %}
 	{% else %}
-	    <p>No tweets are available.</p>
-	{% endif %}
+	    <p></p>
+	{% endif %}</div>
+
 	</div>
-	<div class="col-md-3"></div>
+	<div class="col-md-1"></div>
+	<div class="col-md-3">
+		<div style="margin-right:15px;" class="panel panel-default">
+  		<div class="panel-heading">
+    		<h3 class="panel-title">Field Identifiers</h3>
+  		</div>
+  		<div class="panel-body">
+			<ul>
+				<li>t - Title</li>
+				<li>d - Description</li>
+				<li>c - Currency <br>(INR or USD)</li>
+				<li>p - Base Price <br>(>= INR 9 or USD 0.49)</li>
+				<li>q - Quantity <br>(0 for unlimited)</li>
+				<li>s - Start Date <br>(YYYY-MM-DD hh:mm)</li>
+				<li>e - End Date <br>(YYYY-MM-DD hh:mm)</li>
+				<li>z - Timezone <br>(ex: "Asia/Kolkate")</li>
+				<li>v - Venue</li>
+				<li>u - Redirect URL</li>
+				<li>n - Note</li>
+				<li>f - File Upload JSON</li>
+				<li>i - Cover Image JSON</li>
+			</ul>	
+		</div>
+ 	</div>
+</div>
 {% endblock %}
+
+{% block tweet_listing %}
+	<form id="sendtweet" name="sendtweet" method="POST" action="tweetsubmit">{% csrf_token %}
+		<input type="hidden" id="tweet_text" name="tweet_text"></input>
+	</form>
+{% endblock %}
+
+{% block cdn %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+{% endblock%}
+
+</html>

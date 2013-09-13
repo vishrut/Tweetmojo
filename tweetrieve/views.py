@@ -65,7 +65,7 @@ def validate_title(title, offer_dict):
 
 def validate_price(price, offer_dict):
 	try:
-		float(price)
+		price = float(price)
 	except ValueError:
 		return False
 	if price==0:
@@ -117,7 +117,7 @@ validation_dict = {
 
 def home(request):
 
-	template = loader.get_template('home.html')
+	template = loader.get_template('tweet_list.html')
 	context = RequestContext(request, {})
 	return HttpResponse(template.render(context))
 
