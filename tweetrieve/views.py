@@ -127,15 +127,10 @@ def home(request):
 
 def create_offer(request):
 	tweet_text = request.POST['tweet_text'].encode('ascii','ignore')
-	
-	# Remove carriage return escape sequence, substitute <br> tags
-	regex = re.compile(r'[\r]')
-	tweet_text = regex.sub('\n', tweet_text)
-	regex = re.compile(r'[<br>]')
-	tweet_text = regex.sub('\n', tweet_text)
+	print tweet_text
 	
 	# offer_dict contains all the offer details
-	param_list = tweet_text.split("\n")
+	param_list = tweet_text.split("<br>")
 	offer_dict = {}
 	for param in param_list:
 		pair = param.split('-', 1)
@@ -191,10 +186,14 @@ def search_tweets(request):
 	status_list = get_tweets(url)
 	
 	tweet_id = 0
+
 	for status in status_list:
 		regex = re.compile(r'[\n]')
 		tweet_text = regex.sub('<br>', status['text'])
-		new_tweet = Tweet(tweet_id = tweet_id, tweet_text=tweet_text)
+		new_tweet = Tweet(tweet_id=tweet_id, 
+						  tweet_text=tweet_text, 
+						  user_name=status['user']['name'],
+						  screen_name=status['user']['screen_name'])
 		tweet_list.append(new_tweet)
 		tweet_id+=1
 	

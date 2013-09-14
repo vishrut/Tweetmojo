@@ -48,7 +48,7 @@ function sendTweet(tweet_id){
 	
 	<div class="col-md-4">
 		<div class="row">
-		<form class="form-inline" role="form" name="input" action="tweetrieve/views/search_tweets" method="get">
+		<form class="form-inline" role="form" name="input" action="/tweetrieve/views/search_tweets" method="get">
 				<div class="form-group">
 				<label class="sr-only" for="handle">Twitter Handle</label>
 				<input type="text" class="form-control" id="handle" name="handle" placeholder="Twitter Username" required>
@@ -56,16 +56,24 @@ function sendTweet(tweet_id){
 				<button type="submit" class="btn btn-primary">Search</button>
 		</form>
 		</div>
-		<div class="row">{% if tweet_list %}
+		{% if tweet_list %}
+		<div class="row">Showing search results for <strong><em>{{ handle }}</em></strong><br><br></div>
+		<div class="row">
 	    {% for tweet in tweet_list %}
+	    	<b>{{ tweet.user_name }}</b><span class="text-muted"> @{{ tweet.screen_name }}</span><br>
 	        <span id="tweet{{tweet.tweet_id}}">{% autoescape off %}{{ tweet.tweet_text }}{% endautoescape %}</span>
 	        <br><br>
 	        <button type="button" class="btn btn-primary btn-sm" onclick="sendTweet({{tweet.tweet_id}})">Create Offer</button>
 	        <hr>
 	    {% endfor %}
-	{% else %}
-	    <p></p>
-	{% endif %}</div>
+	    </div>
+		{% else %}
+		{% if handle %}
+		<div class="row">
+	   	Sorry, no tweets found. Please use a different search keyword.
+		</div>
+		{% endif %}	
+		{% endif %}
 
 	</div>
 	<div class="col-md-1"></div>
