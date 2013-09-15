@@ -46,13 +46,15 @@ translation_dict = {
 
 # Error messages to be displayed when validations fail.
 messages = {
-			'title': 'Title required, should not be empty',
-			'currency': 'Currency required and must be INR or USD',
-			'base_price': 'Base price must be a number. Should be at least USD 0.49 or INR 9',
-			'quantity': 'Quantity must be a number',
+			'title': 'Title required, should not be empty.',
+			'currency': 'Currency required and must be INR or USD.',
+			'base_price': 'Base price must be a number. Should be at least USD 0.49 or INR 9.00',
+			'quantity': 'Quantity must be a number.',
 			'start_date': 'Start date format should be YYYY-MM-DD hh:mm',
 			'end_date': 'End date format should be be YYYY-MM-DD hh:mm',
-			'date_trio': 'For an event, start date, end date and timezone should occur together.'
+			'date_trio': 'For an event, start date, end date and timezone should occur together.',
+			'file_upload_json': 'File upload is not a JSON object.',
+			'cover_image_json': 'Cover image is not a JSON object.'
 		}
 
 # Validation functions
@@ -87,6 +89,14 @@ def validate_quantity(quantity, offer_dict):
 	else:
 		return False
 
+def validate_json(test_json, offer_dict):
+	print test_json
+	try:
+		new_json = json.loads(test_json)
+	except ValueError:
+		return False
+	return True
+
 def validate_currency(currency, offer_dict):
 	if currency=='INR' or currency=='USD':
 		return True
@@ -105,9 +115,9 @@ def send_offer(offer_dict):
            'X-App-Id': X_APP_ID,
            'X-Auth-Token': X_AUTH_TOKEN 
 		}
-	r = requests.post(INSTAMOJO_URL, headers=headers, data=offer_dict)
-	im_response = r.json()
-	return im_response
+
+	response = requests.post(INSTAMOJO_URL, headers=headers, data=offer_dict)
+	return response.json()
 
 # This dictionary maps each field to a validation function
 validation_dict = {
@@ -116,7 +126,9 @@ validation_dict = {
 			'base_price': validate_price,
 			'quantity': validate_quantity,
 			'start_date': validate_date, 
-			'end_date': validate_date, 
+			'end_date': validate_date,
+			'file_upload_json': validate_json,
+			'cover_image_json': validate_json 
 		}
 
 def home(request):
@@ -127,7 +139,7 @@ def home(request):
 
 def create_offer(request):
 	tweet_text = request.POST['tweet_text'].encode('ascii','ignore')
-	print tweet_text
+	#tweet_text = 't-O1<br>d-descr<br>c-INR<br>p-9<br>q-0<br>s-2013-12-12 12:00<br>e-2013-12-13 12:00<br>z-Asia/Kolkata<br>f-{"abc": "def"}<br>i-{"abc": "def"}'
 	
 	# offer_dict contains all the offer details
 	param_list = tweet_text.split("<br>")
@@ -145,16 +157,16 @@ def create_offer(request):
 	error_messages = validate_offer(offer_dict)
 	
 	if len(error_messages) == 0: # Validation successful
-		im_response = send_offer(offer_dict)
-		if im_response['success']: # Offer created successfully
-			link = im_response['offer']['url']
+		response = send_offer(offer_dict)
+		if response['success']: # Offer created successfully
+			link = response['offer']['url']
 			context = RequestContext(request, {
 				'link': link,
 			})
 		else: # Server error
 			context = RequestContext(request, {
 				'remote_error': True,
-				'response_object':r.text
+				'response_object':response
 			})
 	else: # Validation failed
 		context = RequestContext(request, {
